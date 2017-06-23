@@ -45,6 +45,7 @@
 #include "precomp.hpp"
 #include <fstream>
 #include <stdlib.h>
+#include <iostream>
 
 #include "agast_score.hpp"
 
@@ -57,7 +58,7 @@ public:
     explicit BRISK_Impl(int thresh=30, int octaves=3, float patternScale=1.0f);
     // custom setup
     explicit BRISK_Impl(const std::vector<float> &radiusList, const std::vector<int> &numberList,
-        float dMax=5.85f, float dMin=8.2f, const std::vector<int> indexChange=std::vector<int>());
+        int thresh = 30, float dMax=5.85f, float dMin=8.2f, const std::vector<int> indexChange=std::vector<int>());
 
     virtual ~BRISK_Impl();
 
@@ -87,6 +88,8 @@ public:
                      CV_OUT std::vector<KeyPoint>& keypoints,
                      OutputArray descriptors,
                      bool useProvidedKeypoints );
+
+    void setThreshold(int threshold_);
 
 protected:
 
@@ -311,11 +314,12 @@ BRISK_Impl::BRISK_Impl(int thresh, int octaves_in, float patternScale)
 
 BRISK_Impl::BRISK_Impl(const std::vector<float> &radiusList,
                        const std::vector<int> &numberList,
+                       int thresh,
                        float dMax, float dMin,
                        const std::vector<int> indexChange)
 {
   generateKernel(radiusList, numberList, dMax, dMin, indexChange);
-  threshold = 20;
+  setThreshold(thresh);
   octaves = 3;
 }
 
@@ -624,6 +628,12 @@ BRISK_Impl::detectAndCompute( InputArray _image, InputArray _mask, std::vector<K
 
   computeDescriptorsAndOrOrientation(_image, _mask, keypoints, _descriptors, doDescriptors, doOrientation,
                                        useProvidedKeypoints);
+}
+
+void
+BRISK_Impl::setThreshold( int threshold_ )
+{
+  threshold = threshold_;
 }
 
 void
@@ -2313,9 +2323,9 @@ Ptr<BRISK> BRISK::create(int thresh, int octaves, float patternScale)
 
 // custom setup
 Ptr<BRISK> BRISK::create(const std::vector<float> &radiusList, const std::vector<int> &numberList,
-                         float dMax, float dMin, const std::vector<int>& indexChange)
+                         int thresh ,float dMax, float dMin, const std::vector<int>& indexChange)
 {
-    return makePtr<BRISK_Impl>(radiusList, numberList, dMax, dMin, indexChange);
+    return makePtr<BRISK_Impl>(radiusList, numberList, thresh, dMax, dMin, indexChange);
 }
 
 }
