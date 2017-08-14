@@ -247,9 +247,10 @@ public:
     scale 1).
     @param dMin threshold for the long pairings used for orientation determination (in pixels for
     keypoint scale 1).
-    @param indexChange index remapping of the bits. */
+    @param indexChange index remapping of the bits.
+    @param thresh AGAST detection threshold score. */
     CV_WRAP static Ptr<BRISK> create(const std::vector<float> &radiusList, const std::vector<int> &numberList,
-        float dMax=5.85f, float dMin=8.2f, const std::vector<int>& indexChange=std::vector<int>());
+        float dMax=5.85f, float dMin=8.2f, const std::vector<int>& indexChange=std::vector<int>(), int thresh=20);
 };
 
 /** @brief Class implementing the ORB (*oriented BRIEF*) keypoint detector and descriptor extractor
